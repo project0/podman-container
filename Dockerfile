@@ -26,5 +26,5 @@ RUN dnf install -y containers-common crun conmon netavark aardvark-dns fuse-over
     && usermod --add-subuids 10000-64535 --add-subgids 10000-64535 podman
 
 USER podman
-ENTRYPOINT [ "/usr/bin/podman" ]
+ENTRYPOINT [ "podman" ]
 CMD [ "system", "service", "--time=0", "tcp://:10888" ]
