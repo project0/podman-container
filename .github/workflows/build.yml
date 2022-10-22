@@ -14,11 +14,19 @@ jobs:
     strategy:
       matrix:
         # all major version
-        podmanVersion:
-          - 4.0.3
-          - 4.1.1
-          - 4.2.1
-          - 4.3.0
+        version:
+          - podman: 4.0.3
+            flavor: |
+              latest=false
+          - podman: 4.1.1
+            flavor: |
+              latest=false
+          - podman: 4.2.1
+            flavor: |
+              latest=false
+          - podman: 4.3.0
+            flavor: |
+              latest=true
 
     runs-on: ubuntu-latest
     steps:
@@ -36,21 +44,18 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          flavor: |
-            latest=false
-            prefix=
-            suffix=
+          flavor: ${{ matrix.version.flavor }}
           images: |
             ghcr.io/${{ github.repository }}
           tags: |
-            type=semver,value=v${{ matrix.podmanVersion }},pattern={{version}}
-            type=semver,value=v${{ matrix.podmanVersion }},pattern={{major}}.{{minor}}
+            type=semver,value=v${{ matrix.version.podman }},pattern={{version}}
+            type=semver,value=v${{ matrix.version.podman }},pattern={{major}}.{{minor}}
 
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
           push: ${{ github.event_name != 'pull_request' }}
           build-args: |
-            PODMAN_VERSION=${{ matrix.podmanVersion }}
+            PODMAN_VERSION=${{ matrix.version.podman }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
