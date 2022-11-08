@@ -18,12 +18,15 @@ RUN git clone --depth 1 --branch v${PODMAN_VERSION} https://github.com/container
     && make -C podman all install
 
 FROM almalinux:9
+ARG CATATONIT_VERSION=0.1.7
 COPY --from=builder /build /
 
 RUN dnf install -y containers-common crun conmon netavark aardvark-dns fuse-overlayfs \
     && dnf clean all \
     && useradd -m podman \
-    && usermod --add-subuids 10000-64535 --add-subgids 10000-64535 podman
+    && usermod --add-subuids 10000-64535 --add-subgids 10000-64535 podman \
+    && curl -L https://github.com/openSUSE/catatonit/releases/download/v${CATATONIT_VERSION}/catatonit.x86_64 -o /usr/bin/catatonit \
+    && chmod a+x /usr/bin/catatonit
 
 USER podman
 ENTRYPOINT [ "podman" ]
