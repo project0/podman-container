@@ -28,6 +28,8 @@ RUN dnf install -y containers-common crun conmon netavark aardvark-dns fuse-over
     && curl -L https://github.com/openSUSE/catatonit/releases/download/v${CATATONIT_VERSION}/catatonit.x86_64 -o /usr/bin/catatonit \
     && chmod a+x /usr/bin/catatonit
 
+COPY etc/ etc/
+
 USER podman
 ENTRYPOINT [ "podman" ]
 CMD [ "system", "service", "--time=0", "tcp://:10888" ]
